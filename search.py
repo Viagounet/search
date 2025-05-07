@@ -4,6 +4,7 @@ import sys
 
 from loguru import logger
 from typing import TypedDict, Optional
+from utils import SearchResult
 
 logger.remove()
 logger.level("SEARCH", no=15, color="<blue>", icon="🧐")
@@ -13,16 +14,10 @@ logger.add(
 )
 
 
-class SearchResult(TypedDict):
-    title: str
-    url: str
-    contains_file: bool
-
-
 def search(
     question: str,
-    country: str = "US",
-    search_lang: str = "en",
+    country: Optional[str] = None,
+    search_lang: Optional[str] = None,
     time_range: Optional[tuple[str, str]] = None,
     pdf: bool = False,
     website: Optional[str] = None,
@@ -40,7 +35,16 @@ def search(
     if website:
         operators.append(f"site:{website}")
     full_search = question + " AND ".join(operators)
-    url = f"https://api.search.brave.com/res/v1/web/search?q={full_search}?country={country}?search_lang={search_lang}"
+
+    country_parameter = ""
+    if country:
+        country_parameter = f"?country={country_parameter.upper()}"
+
+    search_lang_parameter = ""
+    if search_lang:
+        search_lang_parameter = f"?search_lang={search_lang.lower()}"
+
+    url = f"https://api.search.brave.com/res/v1/web/search?q={full_search}{country_parameter}{search_lang_parameter}"
 
     headers = {
         "Accept": "application/json",
@@ -48,7 +52,7 @@ def search(
         "X-Subscription-Token": os.environ["BRAVE_API_KEY"],
     }
 
-    logger.log("SEARCH", f"Searching for {full_search}")
+    logger.log("SEARCH", f"Searching for {url}")
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     json_response = response.json()

@@ -1,7 +1,8 @@
 from playwright.sync_api import sync_playwright
+from inscriptis import get_text
 
 
-def fetch_website_data(url: str) -> tuple[str | None, str | None]:
+def fetch_website_data(url: str) -> tuple[str | None, str | None, str | None]:
     """
     Se connecte à une URL donnée avec Playwright et retourne le titre et le contenu HTML de la page.
 
@@ -29,23 +30,11 @@ def fetch_website_data(url: str) -> tuple[str | None, str | None]:
             content = page.content()
             # print(f"Contenu de la page :\n{content[:500]}...") # Affiche les 500 premiers caractères
 
-            return title, content
+            text = get_text(content)
+            return title, content, text
         except Exception as e:
             print(f"Une erreur est survenue lors de la connexion à {url}: {e}")
-            return None, None
+            return None, None, None
         finally:
             # Ferme le navigateur
             browser.close()
-
-
-if __name__ == "__main__":
-    target_url = "https://orange.com"  # Remplacez par l'URL de votre choix
-    website_title, website_content = fetch_website_data(target_url)
-
-    if website_title and website_content:
-        from inscriptis import get_text
-
-        text = get_text(website_content)
-        print(text.replace("\n\n", "\n"))
-    else:
-        print(f"Impossible de récupérer les données pour {target_url}")
