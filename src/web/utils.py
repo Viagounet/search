@@ -5,6 +5,7 @@ import fitz
 
 from urllib.parse import urlparse
 from typing import TypedDict
+from pdf2image import convert_from_bytes
 
 
 class SearchResult(TypedDict):
@@ -24,3 +25,15 @@ def pdf_stream(url: str) -> io.BytesIO:
     response.raise_for_status()
     pdf_content = response.content
     return io.BytesIO(pdf_content)
+
+
+def pdf_to_base64_images(stream: io.BytesIO) -> list[str]:
+    images = convert_from_bytes(stream)
+    base64_images: list[str] = []
+    for image in images:
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        img_byte = buffer.getvalue()
+        base64_string = base64.b64encode(img_byte).decode("utf-8")
+        base64_images.append(base64_string)
+    return base64_images
