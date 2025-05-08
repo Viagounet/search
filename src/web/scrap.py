@@ -3,6 +3,7 @@ from playwright.async_api import async_playwright, Playwright
 from inscriptis import get_text
 from loguru import logger
 
+
 async def _fetch_website_data(
     playwright: Playwright, url: str
 ) -> tuple[str | None, str | None, str | None]:
@@ -34,6 +35,7 @@ async def _fetch_website_data(
     finally:
         # Ferme le navigateur
         await browser.close()
+
 
 async def read_url(url: str) -> str:
     """Reads the content of a webpage url"""
