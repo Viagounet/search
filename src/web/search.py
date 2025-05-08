@@ -4,7 +4,7 @@ import sys
 
 from loguru import logger
 from typing import TypedDict, Optional
-from utils import SearchResult
+from web.utils import SearchResult
 
 logger.remove()
 logger.level("SEARCH", no=15, color="<blue>", icon="🧐")
